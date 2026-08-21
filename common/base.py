@@ -78,10 +78,9 @@ async def test_code(client, semaphore, method, url, headers, body_template, payl
                     "full_text": response.text if SAVE_OUTPUT_TO_FILE else None,
                 }
 
-                print(f"\n[+] Valid response (HTTP {response.status_code})!")
-                print(f"[+] Valid payload: {payload_dict}")
-
                 if PRINT_OUTPUT_PREVIEW:
+                    print(f"\n[+] Valid response (HTTP {response.status_code})!")
+                    print(f"[+] Valid payload: {payload_dict}")
                     print("\n" + response.text[:100])
                     if len(response.text) > 100:
                         print("\n[... Output truncated ...]")
@@ -101,7 +100,7 @@ async def test_code(client, semaphore, method, url, headers, body_template, payl
 async def run_payloads(raw_req, payload_iterable, check_victory):
     """Run payloads from a generator/iterable and return the first successful result."""
     method, url, headers, body_template = parse_raw_request(raw_req)
-    print(f"[*] Inizio fuzzer su {url}...")
+    # print(f"[*] Inizio fuzzer su {url}...")
 
     semaphore = asyncio.Semaphore(CONCURRENCY_LIMIT)
     stop_event = asyncio.Event()
