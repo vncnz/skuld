@@ -25,23 +25,17 @@ Priority: u=0, i
 TE: trailers
 """.strip()
 
-def check_victory (response):
-    """Check if the response is a victory condition."""
-    # return True
-    return response.status_code == 200 # and ("Welcome" in response.text)
-    # return response.status_code == 302 # and "Location" in response.headers
-
 async def one_call():
     """A simple call. Returns the response"""
 
     # One request, no payload replaces
     raw_req = RAW_REQUEST
-    result = await run_payloads(raw_req, [{}], check_victory)
+    result = await run_payloads(raw_req, [{}], lambda x: True)
     return result
 
 async def main():
     result = await one_call()
-    if result:
+    if result['status_code'] == 200:
         print(f"\n[>] Successful")
     else:
         print("\n[-] No valid payload found.")
