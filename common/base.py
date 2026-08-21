@@ -99,9 +99,7 @@ async def test_code(client, semaphore, method, url, headers, body_template, payl
             pass
 
 async def run_payloads(raw_req, payload_iterable, check_victory):
-    """Run payloads from a generator/iterable and return the first successful result.
-    If `payload_iterable` is None, uses the module-level `generate_payloads()` generator.
-    """
+    """Run payloads from a generator/iterable and return the first successful result."""
     method, url, headers, body_template = parse_raw_request(raw_req)
     print(f"[*] Inizio fuzzer su {url}...")
 
