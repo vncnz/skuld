@@ -75,7 +75,7 @@ async def test_code(client, semaphore, method, url, headers, body_template, payl
                     "http_version": response.http_version,
                     "reason": response.reason_phrase,
                     "text_preview": response.text[:100] if PRINT_OUTPUT_PREVIEW else None,
-                    "full_text": response.text if SAVE_OUTPUT_TO_FILE else None,
+                    "full_text": response.text,
                 }
 
                 if PRINT_OUTPUT_PREVIEW:
