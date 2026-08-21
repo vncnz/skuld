@@ -1,4 +1,4 @@
-# skuld
+# Skuld - ᛊᚲᚢᛚᛞ
 A collection of modular Python scripts and HTTP/2 automation utilities designed for PortSwigger Web Security Academy labs and BSCP exam preparation.
 
 Named after the Norn of what is to be revealed, Skuld provides lightweight async alternatives to Burp Suite Intruder/Repeater workflows for educational web security environments.
