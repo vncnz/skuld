@@ -1,0 +1,51 @@
+# SQL injection 35 of 51
+# Lab: Blind SQL injection with conditional errors
+
+import asyncio
+from common.base import run_payloads
+
+# RAW request (from Burp Intruder) with placeholders like §1§, §2§... or §CODE§, §USER§
+RAW_REQUEST = """
+GET /filter?category=Pets HTTP/2
+Host: 0a00003a0497538b804c08d6005b004e.web-security-academy.net
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:154.0) Gecko/20100101 Firefox/154.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.9
+Accept-Encoding: gzip, deflate, br, zstd
+DNT: 1
+Sec-GPC: 1
+Connection: keep-alive
+Referer: https://0a00003a0497538b804c08d6005b004e.web-security-academy.net/
+Cookie: session=VjncAOXHmKXGks4abbCV5N38OfOPePI8; TrackingId=eBPPhE534sOJOMao
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: same-origin
+Sec-Fetch-User: ?1
+Priority: u=0, i
+TE: trailers
+""".strip()
+
+def check_victory (response):
+    """Check if the response is a victory condition."""
+    # return True
+    return response.status_code == 200 # and ("Welcome" in response.text)
+    # return response.status_code == 302 # and "Location" in response.headers
+
+async def one_call():
+    """A simple call. Returns the response"""
+
+    # One request, no payload replaces
+    raw_req = RAW_REQUEST
+    result = await run_payloads(raw_req, [{}], check_victory)
+    return result
+
+async def main():
+    result = await one_call()
+    if result:
+        print(f"\n[>] Successful")
+    else:
+        print("\n[-] No valid payload found.")
+
+if __name__ == "__main__":
+    asyncio.run(main())

@@ -25,43 +25,6 @@ Sec-Fetch-User: ?1
 Priority: u=0, i
 """.strip()
 
-def generate_payloads_examples():
-    """
-    Change this function depending on your needs.
-    Returns something like this: {"§PLACEHOLDER§": "VALUE"}
-    """
-
-    import string
-
-    # One-shot payload (no placeholders)
-    # return [{}]
-
-    for pos in range(1, 21):
-
-        for l in string.ascii_lowercase:
-            yield {"§LETTER§": l, "§POS§": pos}
-        for l in string.ascii_uppercase:
-            yield {"§LETTER§": l, "§POS§": pos}
-        for n in range(10):
-            yield {"§LETTER§": str(n), "§POS§": pos}
-
-    # for n in range(2,30):
-    #    yield {"§len§": n}
-    
-    # EXAMPLE 1: Single payload (4-digits OTP)
-    #for otp in generate_otps(length=4):
-    #    yield {"§CODE§": otp}
-
-    # EXAMPLE 2: Multi-payload / Cluster Bomb (Username + Password)
-    # usernames = ["admin", "carlos", "wiener"]
-    # passwords = generate_wordlist("passwords.txt")
-    # for user, pwd in itertools.product(usernames, passwords):
-    #     yield {"§USER§": user, "§PASS§": pwd}
-
-    # EXAMPLE 3: Pitchfork (Coupled values 1:1)
-    # for user, pwd in zip(users_list, pass_list):
-    #     yield {"§USER§": user, "§PASS§": pwd}
-
 def check_victory (response):
     """Check if the response is a victory condition."""
     # return True
