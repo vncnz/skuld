@@ -1,5 +1,4 @@
-# SQL injection 35 of 51
-# Lab: Blind SQL injection with conditional errors
+# Just a simple network call
 
 import asyncio
 from common.base import run_payloads
