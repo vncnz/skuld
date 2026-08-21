@@ -2,7 +2,6 @@ import asyncio
 import re
 from common.base import inject_payloads, parse_raw_request
 from common.utils import save_on_file
-import httpx
 
 CONCURRENCY_LIMIT = 1
 PRINT_OUTPUT_PREVIEW = False
@@ -98,52 +97,128 @@ async def test_code(client, semaphore, method, url, headers, body_template, payl
             # Victory condition
             if check_victory(response):
                 stop_event.set()
+                result = {
+                    "payload": payload_dict,
+                    "status_code": response.status_code,
+                    "headers": dict(response.headers),
+                    "http_version": response.http_version,
+                    "reason": response.reason_phrase,
+                    "text_preview": response.text[:100] if PRINT_OUTPUT_PREVIEW else None,
+                    "full_text": response.text if SAVE_OUTPUT_TO_FILE else None,
+                }
+
                 print(f"\n[+] Valid response (HTTP {response.status_code})!")
                 print(f"[+] Valid payload: {payload_dict}")
-                print(f"[+] Header Location: {response.headers.get('Location')}")
-                print(f"[+] Set-Cookie: {response.headers.get('Set-Cookie')}")
-
-                print(f"\n{"="*20} RESPONSE {"="*20}")
-                print(f"HTTP/{response.http_version} {response.status_code} {response.reason_phrase}")
-                for k, v in response.headers.items():
-                    print(f"{k}: {v}")
-                
 
                 if PRINT_OUTPUT_PREVIEW:
-                    print("\n" + response.text[:100]) # Anteprima terminale (primi 1000 char)
+                    print("\n" + response.text[:100])
                     if len(response.text) > 100:
-                        print("\n[... Output troncato a terminale ...]")
-                    print("="*59)
+                        print("\n[... Output truncated ...]")
 
                 if SAVE_OUTPUT_TO_FILE:
-                    # Save and open the full response in a temporary file
                     full_output = f"HTTP/{response.http_version} {response.status_code} {response.reason_phrase}\n"
                     full_output += "\n".join([f"{k}: {v}" for k, v in response.headers.items()])
                     full_output += "\n\n" + response.text
                     save_on_file(full_output, filename='/tmp/brute.html')
+
+                return result
                 
         except Exception as ex:
             print(ex)
             pass
 
 async def main():
+    result = await run_payloads()
+    if result:
+        print(f"\n[>] Winner: {result['payload']}")
+    else:
+        print("\n[-] No valid payload found.")
+
+
+async def run_payloads(payload_iterable=None):
+    """Run payloads from a generator/iterable and return the first successful result.
+    If `payload_iterable` is None, uses the module-level `generate_payloads()` generator.
+    """
     method, url, headers, body_template = parse_raw_request(RAW_REQUEST)
-    
+    print(f"[*] Inizio fuzzer su {url}...")
+
     semaphore = asyncio.Semaphore(CONCURRENCY_LIMIT)
     stop_event = asyncio.Event()
 
-    print(f"[*] Inizio fuzzer su {url}...")
-    
+    import httpx
     limits = httpx.Limits(max_connections=CONCURRENCY_LIMIT, max_keepalive_connections=CONCURRENCY_LIMIT)
     async with httpx.AsyncClient(http2=True, limits=limits, verify=False) as client:
         tasks = []
-        
-        for payload_dict in generate_payloads():
-            tasks.append(
-                test_code(client, semaphore, method, url, headers, body_template, payload_dict, stop_event)
-            )
-            
-        await asyncio.gather(*tasks)
+        iterable = payload_iterable if payload_iterable is not None else generate_payloads()
+
+        # Default behavior: run sequentially (useful for interactive multi-step attacks)
+        for payload_dict in iterable:
+            res = await test_code(client, semaphore, method, url, headers, body_template, payload_dict, stop_event)
+            if res:
+                return res
+
+    return None
+
+
+def gen_length_payloads(max_len=40, placeholder="§len§"):
+    """Yield payloads to test different lengths."""
+    for n in range(1, max_len + 1):
+        yield {placeholder: n}
+
+
+def gen_char_payloads_for_pos(pos, charset=None, pos_placeholder="§POS§", letter_placeholder="§LETTER§"):
+    """Yield payloads to test characters for a specific position."""
+    import string
+    if charset is None:
+        charset = string.ascii_lowercase + string.ascii_uppercase + string.digits
+    for ch in charset:
+        yield {pos_placeholder: pos, letter_placeholder: ch}
+
+
+async def brute_force_password(max_len=40, charset=None):
+    """High-level two-phase brute-force:
+    1) discover length using `§len§` placeholder
+    2) for each position, discover a single character using `§POS§` and `§LETTER§` placeholders
+
+    Returns the discovered password or None on failure.
+    """
+    # Phase 1: discover length
+    length_result = await run_payloads(payload_iterable=gen_length_payloads(max_len),)
+    if not length_result:
+        return None
+
+    # extract length from payload dict (assumes single key)
+    found_len = None
+    for v in length_result['payload'].values():
+        try:
+            found_len = int(v)
+            break
+        except Exception:
+            continue
+
+    if not found_len:
+        return None
+
+    password = ''
+    for pos in range(1, found_len + 1):
+        res = await run_payloads(payload_iterable=gen_char_payloads_for_pos(pos, charset))
+        if not res:
+            # could not find char for this position
+            return None
+        # assume payload contains §LETTER§ value
+        letter = None
+        for k, v in res['payload'].items():
+            if k.startswith('§'):
+                # heuristic: if key contains LETTER or POS
+                if 'LETTER' in k or 'letter' in k or 'POS' not in k:
+                    letter = v
+                    break
+        if letter is None:
+            # fallback: take first value
+            letter = list(res['payload'].values())[0]
+        password += str(letter)
+
+    return password
 
 if __name__ == "__main__":
     asyncio.run(main())
