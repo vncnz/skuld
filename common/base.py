@@ -76,6 +76,7 @@ async def test_code(client, semaphore, method, url, headers, body_template, payl
                     "reason": response.reason_phrase,
                     "text_preview": response.text[:100] if PRINT_OUTPUT_PREVIEW else None,
                     "full_text": response.text,
+                    "total_seconds": response.elapsed.total_seconds()
                 }
 
                 if PRINT_OUTPUT_PREVIEW:
@@ -106,7 +107,7 @@ async def run_payloads(raw_req, payload_iterable, check_victory):
     stop_event = asyncio.Event()
 
     limits = httpx.Limits(max_connections=CONCURRENCY_LIMIT, max_keepalive_connections=CONCURRENCY_LIMIT)
-    async with httpx.AsyncClient(http2=True, limits=limits, verify=False) as client:
+    async with httpx.AsyncClient(http2=True, limits=limits, verify=False, timeout=30.0) as client:
         # tasks = []
 
         # Default behavior: run sequentially (useful for interactive multi-step attacks)
