@@ -37,3 +37,30 @@ python [script].py
 deactivate
 rm -rf /tmp/bf-env
 ```
+
+
+## My progress in Accademy
+
+### Completed
+
+- Server-side vulnerabilities (Apprentice, the only one)
+- Authentication vulnerabilities
+- SQL injection
+  
+### Available
+
+- API testing
+- Path traversal
+- Server-side request forgery (SSRF) attacks
+- File upload vulnerabilities
+- Cross-site request forgery (CSRF)
+- Prototype pollution
+
+- Web cache deception
+- WebSockets vulnerabilities
+- Clickjacking (UI redressing)
+- GraphQL API vulnerabilities
+- Cross-origin resource sharing (CORS)
+- NoSQL injection
+- Race conditions
+- Web LLM attacks
