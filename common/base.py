@@ -37,7 +37,7 @@ def parse_raw_request(raw_text: str):
     return method, url, headers, body
 
 def inject_payloads(raw_template: str, payload_dict: dict) -> str:
-    """Sostituisce dinamicamente tutti i segnaposto presenti nel template."""
+    """Dynamically replaces all placeholders in the template"""
     result = raw_template
     for placeholder, value in payload_dict.items():
         result = result.replace(placeholder, str(value))
