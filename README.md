@@ -46,10 +46,10 @@ rm -rf /tmp/bf-env
 - Server-side vulnerabilities (Apprentice, the only one)
 - Authentication vulnerabilities
 - SQL injection
+- API testing
   
 ### Available
 
-- API testing
 - Path traversal
 - Server-side request forgery (SSRF) attacks
 - File upload vulnerabilities
