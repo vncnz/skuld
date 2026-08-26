@@ -14,8 +14,8 @@ In Norse mythology, Skuld is one of the three Norns (the goddesses of fate) who 
 1. Create venv
 
 ```bash
-python -m venv /tmp/bf-env
-source /tmp/bf-env/bin/activate
+python -m venv env
+source env/bin/activate
 ```
 
 2. Install all
@@ -31,11 +31,11 @@ pip install "httpx[http2]"
 python [script].py
 ```
 
-4. Exit and clear
+4. Exit and clear   (if you need to)
 
 ```bash
 deactivate
-rm -rf /tmp/bf-env
+rm -rf env
 ```
 
 
