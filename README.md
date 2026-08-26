@@ -51,16 +51,18 @@ rm -rf env
   
 ### Available
 
-- Server-side request forgery (SSRF) attacks
 - File upload vulnerabilities
-- Cross-site request forgery (CSRF)
+- Server-side request forgery (SSRF) attacks
+- NoSQL injection
+
+- Race conditions
+- GraphQL API vulnerabilities
 - Prototype pollution
 
-- Web cache deception
-- WebSockets vulnerabilities
-- Clickjacking (UI redressing)
-- GraphQL API vulnerabilities
+- Cross-site request forgery (CSRF)
 - Cross-origin resource sharing (CORS)
-- NoSQL injection
-- Race conditions
+- Clickjacking (UI redressing)
+- WebSockets vulnerabilities
+
+- Web cache deception
 - Web LLM attacks
