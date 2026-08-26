@@ -47,10 +47,10 @@ rm -rf /tmp/bf-env
 - Authentication vulnerabilities
 - SQL injection
 - API testing
+- Path traversal
   
 ### Available
 
-- Path traversal
 - Server-side request forgery (SSRF) attacks
 - File upload vulnerabilities
 - Cross-site request forgery (CSRF)
