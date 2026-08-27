@@ -12,28 +12,28 @@ import httpx
 
 def parse_raw_request(raw_text: str):
     """Build request (url, headers e body) from RAW string."""
-    lines = raw_text.splitlines()
+    normalized = raw_text.replace("\r\n", "\n").replace("\r", "\n")
+    header_text, separator, body = normalized.partition("\n\n")
+
+    if not separator:
+        # raise ValueError("Raw request is missing the blank line separating headers and body.")
+        body = ''
+
+    lines = header_text.splitlines()
     method, path, _ = lines[0].strip().split()
-    
+
     headers = {}
-    body_lines = []
-    is_body = False
-    
     for line in lines[1:]:
-        if line == "":
-            is_body = True
+        if not line.strip():
             continue
-        if is_body:
-            body_lines.append(line)
-        else:
-            key, value = line.split(":", 1)
-            if key.strip().lower() != "content-length":
-                headers[key.strip()] = value.strip()
-                
+        key, value = line.split(":", 1)
+        if key.strip().lower() != "content-length":
+            headers[key.strip()] = value.strip()
+
     host = headers.get("Host", "")
     url = f"https://{host}{path}"
-    body = "\n".join(body_lines)
-    
+
+    body = body.replace("\r\n", "\n").replace("\n", "\r\n")
     return method, url, headers, body
 
 def inject_payloads(raw_template: str, payload_dict: dict) -> str:
