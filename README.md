@@ -48,10 +48,10 @@ rm -rf env
 - SQL injection
 - API testing
 - Path traversal
-  
+- File upload vulnerabilities
+
 ### Available
 
-- File upload vulnerabilities
 - Server-side request forgery (SSRF) attacks
 - NoSQL injection
 
