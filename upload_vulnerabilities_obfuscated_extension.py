@@ -1,4 +1,4 @@
-# File upload vulnerabilities 30 of 35
+# File upload vulnerabilities 23 of 35
 # Lab: Web shell upload via obfuscated file extension
 
 import asyncio
