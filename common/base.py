@@ -43,7 +43,7 @@ def inject_payloads(raw_template: str, payload_dict: dict) -> str:
         result = result.replace(placeholder, str(value))
     return result
 
-async def test_code(client, semaphore, method, url, headers, body_template, payload_dict, stop_event, check_victory):
+async def test_code(client, semaphore, method, url, headers, body_template, payload_dict, stop_event, check_victory, follow_redirects):
     if stop_event.is_set():
         return
 
@@ -62,7 +62,7 @@ async def test_code(client, semaphore, method, url, headers, body_template, payl
                 url=url,
                 headers=req_headers,
                 content=body,
-                follow_redirects=False # IMPORTANT if you need to check the return code 302
+                follow_redirects=follow_redirects # IMPORTANT: False if you need to check the return code 302
             )
 
             # Victory condition
@@ -98,7 +98,7 @@ async def test_code(client, semaphore, method, url, headers, body_template, payl
             print(ex)
             pass
 
-async def run_payloads(raw_req, payload_iterable, check_victory):
+async def run_payloads(raw_req, payload_iterable, check_victory, follow_redirects=False, timeout=30.0):
     """Run payloads from a generator/iterable and return the first successful result."""
     method, url, headers, body_template = parse_raw_request(raw_req)
     # print(f"[*] Inizio fuzzer su {url}...")
@@ -107,12 +107,12 @@ async def run_payloads(raw_req, payload_iterable, check_victory):
     stop_event = asyncio.Event()
 
     limits = httpx.Limits(max_connections=CONCURRENCY_LIMIT, max_keepalive_connections=CONCURRENCY_LIMIT)
-    async with httpx.AsyncClient(http2=True, limits=limits, verify=False, timeout=30.0) as client:
+    async with httpx.AsyncClient(http2=True, limits=limits, verify=False, timeout=timeout) as client:
         # tasks = []
 
         # Default behavior: run sequentially (useful for interactive multi-step attacks)
         for payload_dict in payload_iterable:
-            res = await test_code(client, semaphore, method, url, headers, body_template, payload_dict, stop_event, check_victory)
+            res = await test_code(client, semaphore, method, url, headers, body_template, payload_dict, stop_event, check_victory, follow_redirects)
             if res:
                 return res
 
