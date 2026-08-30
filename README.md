@@ -49,10 +49,10 @@ rm -rf env
 - API testing
 - Path traversal
 - File upload vulnerabilities
+- Server-side request forgery (SSRF) attacks
 
 ### Available
 
-- Server-side request forgery (SSRF) attacks
 - NoSQL injection
 
 - Race conditions
