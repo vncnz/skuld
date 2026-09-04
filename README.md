@@ -50,10 +50,9 @@ rm -rf env
 - Path traversal
 - File upload vulnerabilities
 - Server-side request forgery (SSRF) attacks
+- NoSQL injection
 
 ### Available
-
-- NoSQL injection
 
 - Race conditions
 - GraphQL API vulnerabilities
