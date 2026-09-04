@@ -11,15 +11,15 @@ from common.payload_generators import generate_alphanumeric
 
 RAW_REQUEST = """
 POST /login HTTP/2
-Host: 0a3b00200460153780a70d4e00860048.web-security-academy.net
+Host: 0ab0005f0394e2e680b91cbd00860030.web-security-academy.net
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:155.0) Gecko/20100101 Firefox/155.0
 Accept: */*
 Accept-Language: en-US,en;q=0.9
 Accept-Encoding: gzip, deflate, br, zstd
-Referer: https://0a3b00200460153780a70d4e00860048.web-security-academy.net/login
+Referer: https://0ab0005f0394e2e680b91cbd00860030.web-security-academy.net/login
 Content-Type: application/json
 Content-Length: 39
-Origin: https://0a3b00200460153780a70d4e00860048.web-security-academy.net
+Origin: https://0ab0005f0394e2e680b91cbd00860030.web-security-academy.net
 Connection: keep-alive
 Cookie: session=of2ct3mRWO8YKwXwiu6cH1hhjBoD1ZlT
 Sec-Fetch-Dest: empty
@@ -34,15 +34,15 @@ Cache-Control: no-cache
 
 RAW_REQUEST_FORGOT = """
 GET /forgot-password?@@@PAYLOAD@@@ HTTP/2
-Host: 0a3b00200460153780a70d4e00860048.web-security-academy.net
+Host: 0ab0005f0394e2e680b91cbd00860030.web-security-academy.net
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:155.0) Gecko/20100101 Firefox/155.0
 Accept: */*
 Accept-Language: en-US,en;q=0.9
 Accept-Encoding: gzip, deflate, br, zstd
-Referer: https://0a3b00200460153780a70d4e00860048.web-security-academy.net/login
+Referer: https://0ab0005f0394e2e680b91cbd00860030.web-security-academy.net/login
 Content-Type: application/json
 Content-Length: 39
-Origin: https://0a3b00200460153780a70d4e00860048.web-security-academy.net
+Origin: https://0ab0005f0394e2e680b91cbd00860030.web-security-academy.net
 Connection: keep-alive
 Cookie: session=of2ct3mRWO8YKwXwiu6cH1hhjBoD1ZlT
 Sec-Fetch-Dest: empty
@@ -85,14 +85,15 @@ def resp_lock (body: str) -> bool:
     else:
         raise Exception(f"Unexpected response: {body}")
 
-parsed = parse_raw_request(RAW_REQUEST.replace("@@@PAYLOAD@@@", '''{"username":"carlos","password":"test"}'''))
+# parsed = parse_raw_request()
+req = RAW_REQUEST.replace("@@@PAYLOAD@@@", '''{"username":"§username§","password":"test"}''')
 
 # Invio singola richiesta senza dover istanziare manualmene client o loop
-res = asyncio.run(send_single_request(parsed))
+res = asyncio.run(send_single_request(req, username="carlos"))
 
 print(f"Status: {res['status_code']}")
 print(f"Tempo di risposta: {res['elapsed']:.3f} secondi")
-print(f"Primi 200 caratteri del body:\n{res['text'][:200]}")
+print(f"Primi 200 caratteri del body:\n{res['text'][:3200]}")
 
 
 # # It returns "Invalid username or password"

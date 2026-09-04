@@ -3,6 +3,8 @@ import time
 import string
 import httpx
 
+# Char to be copy-pasted for placeholders in attacks: §
+
 def parse_raw_request(raw_text: str):
     """Build request (url, headers e body) from RAW string."""
     normalized = raw_text.replace("\r\n", "\n").replace("\r", "\n")
@@ -38,32 +40,33 @@ def parse_raw_request(raw_text: str):
 # 1. PARSER HELPER & REQUEST PREPARATION
 # ==========================================
 
-def build_request(raw_template: str, pos: int = 1, payload_val: str = "") -> dict:
+def build_request(raw_template: str, **kwargs) -> dict:
     """
     Sostituisce i placeholder direttamente sulla stringa raw originale,
     poi ne effettua il parsing.
     """
     # 1. Sostituzione diretta su tutta la richiesta grezza
-    formatted_raw = raw_template.format(pos=pos, payload=payload_val)
+    # formatted_raw = raw_template.format(*kwargs)
+    for name, value in kwargs.items():
+        raw_template = raw_template.replace(f'§{name}§', str(value))
     
     # 2. Parsing della richiesta già formattata
-    return parse_raw_request(formatted_raw)
+    return parse_raw_request(raw_template)
 
 # ==========================================
 # 2. RUNNER ATOMICO (Singola Chiamata)
 # ==========================================
 
 async def send_single_request(
-    raw_template: str, 
-    pos: int = 1, 
-    payload_val: str = "", 
+    raw_template: str,
     client: httpx.AsyncClient = None,
-    semaphore: asyncio.Semaphore = None
+    semaphore: asyncio.Semaphore = None,
+    **kwargs
 ) -> dict:
     """
     Compone, parsa ed esegue una singola richiesta HTTP.
     """
-    parsed_req = build_request(raw_template, pos, payload_val)
+    parsed_req = build_request(raw_template, **kwargs)
     
     close_client = False
     if client is None:
